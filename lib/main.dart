@@ -20,7 +20,6 @@ class Counter extends StateNotifier<int?> {
   Counter() : super(null);
 
   void increment() => state = state == null ? 1 : state + 1;
-  int? get value => state;
 }
 
 final counterProvider = StateNotifierProvider<Counter, int?>((ref) => Counter());
@@ -50,7 +49,21 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home Page')),
+      appBar: AppBar(
+        title: Consumer(
+          builder: (context, ref, child) {
+            final count = ref.watch(counterProvider);
+
+            return Text(count == null ? 'Press the button' : count.toString());
+          },
+        ),
+      ),
+      body: Center(
+        child: TextButton(
+          onPressed: ref.read(counterProvider.notifier).increment,
+          child: const Text('Increment counter'),
+        ),
+      ),
     );
   }
 }
